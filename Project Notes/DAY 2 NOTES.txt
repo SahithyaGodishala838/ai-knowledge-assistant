@@ -1,0 +1,205 @@
+📙 DAY 2 NOTES — Document Loading System
+
+Day 2 focused on the **first core feature** of your RAG assistant:
+
+> It should read and understand your documents.
+
+We built exactly that.
+
+---
+
+# **1️⃣ Created Document Storage Folders**
+
+```
+data/
+  documents/
+```
+
+This is where your `.txt` files will live.
+
+---
+
+# **2️⃣ Added Your First Knowledge File**
+
+Created:
+
+```
+data/documents/note1.txt
+```
+
+Contents:
+
+```
+This is my first knowledge file for the AI Knowledge Assistant.
+I want this project to help me learn Python, AI, RAG, and LLMs step by step.
+```
+
+This is the knowledge your AI assistant will later convert into embeddings.
+
+---
+
+# **3️⃣ Created `loader.py` — Document Reader**
+
+Path:
+
+```
+src/loader.py
+```
+
+### ✔️ Full Code:
+
+```python
+import os
+from pathlib import Path
+
+# Locate the project root (1 level above src)
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+# Path to data/documents
+DOCUMENTS_DIR = PROJECT_ROOT / "data" / "documents"
+
+
+def load_text_documents():
+    """
+    Load all .txt files from data/documents.
+    Returns:
+        A list of dicts:
+        [
+          {"name": "note1.txt", "content": "..."},
+          ...
+        ]
+    """
+    docs = []
+
+    if not DOCUMENTS_DIR.exists():
+        print(f"[WARNING] No documents directory found at: {DOCUMENTS_DIR}")
+        return docs
+
+    for file_path in DOCUMENTS_DIR.glob("*.txt"):
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                content = f.read()
+            docs.append({
+                "name": file_path.name,
+                "content": content
+            })
+        except Exception as e:
+            print(f"[ERROR] Failed to read {file_path.name}: {e}")
+
+    return docs
+```
+
+---
+
+### 🔍 **Explanation — Line by Line**
+
+#### **`from pathlib import Path`**
+
+Better than using raw strings for file paths.
+
+#### **`PROJECT_ROOT = Path(__file__).resolve().parents[1]`**
+
+* `__file__` = path of loader.py
+* `.resolve()` = absolute path
+* `.parents[1]` = go up **one folder** (src → project root)
+
+So `PROJECT_ROOT` = your main project folder.
+
+#### **`DOCUMENTS_DIR = PROJECT_ROOT / "data" / "documents"`**
+
+Creates:
+
+```
+ai-knowledge-assistant/data/documents
+```
+
+as a path object.
+
+#### **`DOCUMENTS_DIR.glob("*.txt")`**
+
+Finds all `.txt` files in that folder.
+
+#### **Reads each file and saves:**
+
+```python
+{"name": file_path.name, "content": content}
+```
+
+This returns a Python **list of documents**.
+
+---
+
+# **4️⃣ Updated `app.py` to Load and Preview Files**
+
+### ✔️ Full Code:
+
+```python
+from loader import load_text_documents
+
+
+def main():
+    print("👋 Hi Sahi, welcome back to your AI Knowledge Assistant project!")
+    print("Day 2: Loading documents from data/documents")
+    print("-" * 60)
+
+    # Load text documents
+    docs = load_text_documents()
+
+    if not docs:
+        print("No text documents found. Please add files to data/documents.")
+        return
+
+    print(f"Loaded {len(docs)} document(s):\n")
+    for idx, doc in enumerate(docs, start=1):
+        preview = doc["content"][:80].replace("\n", " ")
+        print(f"{idx}. {doc['name']} → {preview}...")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+---
+
+### 🔍 Explanation:
+
+* `from loader import load_text_documents`
+  Imports your new loader function.
+
+* `docs = load_text_documents()`
+  Loads all `.txt` files.
+
+* `if not docs:`
+  If folder is empty → show a message.
+
+* Show preview:
+
+```python
+preview = doc["content"][:80]
+```
+
+This shows first 80 characters.
+
+---
+
+# 🏁 **END RESULT OF DAY 2**
+
+Running:
+
+```bash
+python src/app.py
+```
+
+prints something like:
+
+```
+Loaded 1 document(s):
+
+1. note1.txt → This is my first knowledge file...
+```
+
+🎉 This means your assistant can now **read knowledge**.
+
+---
+
+

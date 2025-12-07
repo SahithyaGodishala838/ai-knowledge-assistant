@@ -1,0 +1,38 @@
+ **AI KNOWLEDGE ASSISTANT — PROJECT NOTES (DAY 1 + DAY 2)**
+
+Project Name: AI Knowledge Assistant (RAG-based personal AI system)
+Goal:
+
+Build an AI application that can:
+
+* Read and understand your documents
+* Convert them into embeddings
+* Retrieve relevant knowledge
+* Answer your questions using RAG (Retrieval-Augmented Generation)
+
+Tech Stack:
+
+| Component       | Tool                                  |
+| --------------- | ------------------------------------- |
+| Language        | Python                                |
+| Environment     | VS Code                               |
+| Version Control | Git & GitHub                          |
+| Document Loader | Custom Python code                    |
+| Future          | Sentence Transformers, FAISS, LLM API |
+
+Folder Structure (Current)
+
+```
+ai-knowledge-assistant/
+ ├─ data/
+ │   └─ documents/
+ ├─ src/
+ │   ├─ app.py
+ │   ├─ loader.py
+ │   └─ __init__.py
+ ├─ .gitignore
+ ├─ README.md
+ ├─ requirements.txt
+```
+
+

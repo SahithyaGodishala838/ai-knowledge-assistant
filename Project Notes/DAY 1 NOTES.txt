@@ -1,0 +1,146 @@
+📘 **DAY 1 NOTES — Setup, Git, and First Python App
+
+
+
+## **1️⃣ Creating the Project Folder**
+
+You created the folder:
+
+```
+ai-knowledge-assistant/
+```
+
+This is your entire project home.
+
+---
+
+## **2️⃣ Creating basic files**
+
+### ✔️ `README.md`
+
+Explains what your project is about.
+
+### ✔️ `.gitignore`
+
+Tells Git which files *not* to track (like venv, cache, etc.)
+
+### ✔️ `requirements.txt`
+
+Contains Python packages you will install later (sentence-transformers, etc.)
+
+---
+
+## **3️⃣ Creating Your First Python File (`app.py`)**
+
+Path:
+
+```
+src/app.py
+```
+
+### 👉 Code you wrote:
+
+```python
+def main():
+    print("👋 Hi Sahi, welcome to your AI Knowledge Assistant project!")
+    print("This is the starting point of our app.")
+    print("We'll slowly turn this into a real RAG-based assistant.")
+
+if __name__ == "__main__":
+    main()
+```
+
+### 💡 Explanation:
+
+* `def main():`
+  Defines a function called `main()` — the starting point of your app.
+
+* `print(...)`
+  Displays text in the terminal.
+
+* `if __name__ == "__main__":`
+  Python runs this block only when you execute the file directly.
+
+This is standard for Python applications.
+
+---
+
+## 4️⃣ Running the App
+
+You ran:
+
+```bash
+python src/app.py
+```
+
+You saw:
+
+```
+👋 Hi Sahi, welcome to your AI Knowledge Assistant project!
+...
+```
+
+If nothing prints → file was not saved → you fixed this.
+
+---
+
+## 5️⃣ Initializing Git
+
+To start tracking your project with Git:
+
+```bash
+git init
+```
+
+* Creates a hidden `.git` folder
+* Turns your folder into a Git repository
+* Git now tracks all file changes
+
+---
+
+## 6️⃣ Staging & Committing
+
+### Stage:
+
+```bash
+git add .
+```
+
+Means: “Git, pay attention to these files.”
+
+### Commit:
+
+```bash
+git commit -m "Initial setup: project skeleton with app.py and basic files"
+```
+
+Means:
+“Save all these staged changes permanently.”
+
+This is your first snapshot.
+
+---
+
+## 7️⃣ Connecting to GitHub
+
+You created a repo:
+
+```
+https://github.com/SahithyaGodishala838/ai-knowledge-assistant
+```
+
+Then linked your local repo:
+
+```bash
+git remote add origin https://github.com/SahithyaGodishala838/ai-knowledge-assistant.git
+git branch -M main
+git push -u origin main
+```
+
+Now your project lives both:
+
+* locally
+* and on GitHub (for anyone to view or clone)
+
+---
+

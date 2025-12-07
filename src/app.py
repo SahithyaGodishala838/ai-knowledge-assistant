@@ -1,23 +1,30 @@
 from loader import load_text_documents
+from embedder import embed_documents
 
 
 def main():
-    print("👋 Hi Sahi, welcome back to your AI Knowledge Assistant project!")
-    print("Day 2: Loading documents from data/documents")
+    print("👋 Day 3: Generating embeddings for your documents!")
     print("-" * 60)
 
-    # Load text documents
+    # Step 1 — Load documents
     docs = load_text_documents()
 
     if not docs:
-        print("No text documents found. Please add files to data/documents.")
+        print("No documents found. Add files in data/documents.")
         return
 
-    print(f"Loaded {len(docs)} document(s):\n")
-    for idx, doc in enumerate(docs, start=1):
-        preview = doc["content"][:80].replace("\n", " ")
-        print(f"{idx}. {doc['name']} → {preview}...")
+    print(f"Loaded {len(docs)} document(s). Now generating embeddings...\n")
 
+    # Step 2 — Generate embeddings
+    embedded_docs = embed_documents(docs)
+
+    # Step 3 — Show embedding size for confirmation
+    for idx, doc in enumerate(embedded_docs, start=1):
+        print(f"{idx}. {doc['name']} → Embedding length: {len(doc['embedding'])}")
+
+    print("\n🎉 Embeddings generated successfully!")
+    print("Tomorrow we will save them & perform semantic search.")
+    
 
 if __name__ == "__main__":
     main()
