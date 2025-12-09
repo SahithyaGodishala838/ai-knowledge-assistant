@@ -1,0 +1,193 @@
+📝 Day 5 – Official Notes (RAG Q&A System)
+
+Here are your structured notes for today, as you requested after each day’s session.
+
+### 🎯 Goal of Day 5
+
+Turn your retrieval system into a **Question–Answering AI Assistant** by adding:
+
+* LLM generation (OpenAI, Gemini, HuggingFace, Local)
+* A RAG pipeline that combines **retrieval + generation**
+* An interactive CLI chatbot (`app.py`)
+
+---
+
+### 📁 New / Updated Files Today
+
+#### 1. `src/build_index.py`
+
+*Purpose:* separate script to (re)build the vector index when documents change.
+
+Workflow inside:
+
+* Load docs → `load_text_documents`
+* Chunk each doc → `chunk_text`
+* Embed each chunk → `embed_text`
+* Store vectors → `save_vectors`
+* Optional test query to ensure retrieval is working
+
+You now run:
+
+```bash
+python src/build_index.py
+```
+
+whenever you add/edit documents.
+
+---
+
+#### 2. `src/config.py`
+
+*Purpose:* Load API keys from `.env` so they’re not hard-coded.
+
+* Reads `OPENAI_API_KEY`, `GEMINI_API_KEY`, `HF_API_TOKEN`
+* Uses `python-dotenv` to load variables from `.env` in project root
+
+Even if keys are empty, the app still works with the **local** provider.
+
+---
+
+#### 3. `src/llm_providers.py`
+
+*Purpose:* One place to talk to **different LLM backends**.
+
+It defines:
+
+* `generate_openai(prompt)`
+* `generate_gemini(prompt)`
+* `generate_hf(prompt)` (HuggingFace)
+* `generate_local(prompt)` – no API, simple offline generator
+* `generate_with_provider(provider, prompt)` – router that picks one of the above
+
+Key ideas:
+
+* Uses `try/except` so missing libs/keys don’t crash the app
+* If a provider isn’t configured, it returns a friendly message
+* `local` always works, using your retrieved context inside the prompt
+
+---
+
+#### 4. `src/rag_pipeline.py`
+
+*Purpose:* Implement the **full RAG flow**.
+
+Main parts:
+
+* `build_prompt(question, retrieved)`
+
+  * Takes top-k retrieved chunks
+  * Formats them into a single **Context + Question** prompt
+  * Instructs the LLM: “Answer ONLY from this context, otherwise say you don’t know.”
+
+* `rag_answer(question, provider="openai", top_k=3)`
+
+  1. Loads vectors → `load_vectors()`
+  2. Embeds the question → `embed_text(question)`
+  3. Retrieves similar chunks → `search(...)`
+  4. Builds prompt → `build_prompt(...)`
+  5. Calls chosen LLM → `generate_with_provider(provider, prompt)`
+  6. Returns `(answer, retrieved_chunks)`
+
+This is exactly what a production RAG service does.
+
+---
+
+#### 5. `src/app.py` (now an interactive chatbot)
+
+*Purpose:* A simple CLI interface to talk to your assistant.
+
+Flow:
+
+1. Shows available providers:
+
+   * `openai`
+   * `gemini`
+   * `huggingface`
+   * `local`
+2. Asks you to choose one
+3. Repeatedly:
+
+   * Ask for a question
+   * Call `rag_answer(question, provider)`
+   * Print:
+
+     * Retrieved chunks with similarity scores
+     * Final generated answer
+4. Type `exit` to quit.
+
+This is your **user interface** now.
+
+---
+
+### 🧠 Conceptual Learning from Day 5
+
+1. **RAG = Retrieval + Generation**
+
+   * Retrieval: find relevant chunks using embeddings + similarity
+   * Generation: use an LLM to form a natural language answer from those chunks
+
+2. **Prompt Engineering for RAG**
+
+   * You learned to explicitly instruct the model:
+
+     * “Use ONLY this context”
+     * “Say ‘I don’t know’ if answer is not present”
+   * This reduces hallucinations and keeps answers grounded in your docs.
+
+3. **Multi-Provider Architecture**
+
+   * You designed the system to switch LLMs just by changing a string:
+
+     * `"openai"` / `"gemini"` / `"huggingface"` / `"local"`
+   * This is how serious systems support multiple backends.
+
+4. **Separation of Concerns**
+
+   * `build_index.py` → indexing pipeline
+   * `vector_store.py` → storage + similarity
+   * `rag_pipeline.py` → core logic
+   * `llm_providers.py` → external models
+   * `app.py` → UI / interaction
+     This modular design is exactly how professional ML projects are structured.
+
+---
+
+### ✅ End State After Day 5
+
+Your project can now:
+
+* Read your documents
+* Chunk them
+* Turn chunks into embeddings
+* Store them in a vector store
+* Perform semantic search
+* Use retrieved chunks + your question to build a RAG prompt
+* Call an LLM (or local generator) to **answer in natural language**
+
+You basically built your own **mini ChatGPT over your notes**. 💪
+
+---
+
+### 🔮 Next Steps (when you’re ready, not today)
+
+* Configure real keys in `.env` and test:
+
+  * `openai`
+  * `gemini`
+  * `huggingface`
+* Add more documents in `data/documents/`
+* Try asking deeper questions, like:
+
+  * “Summarize everything I wrote about RAG.”
+  * “What are embeddings and why do I use them in this project?”
+
+---
+
+If you’d like, tomorrow I can:
+
+* Help you test **OpenAI / Gemini / HuggingFace** one by one
+* Or start polishing your **README.md** with a proper project description
+* Or generate a **Day 5 PDF notes** file like earlier days
+
+For now, you’ve officially completed **Day 5**.
+Amazing work, Sahi. 💛
