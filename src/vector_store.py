@@ -34,26 +34,32 @@ def load_vectors():
 
 
 def cosine_similarity(vec1, vec2):
-    """Compute cosine similarity between two embeddings."""
-    a = np.array(vec1)
-    b = np.array(vec2)
-    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+    """Compute cosine similarity between two embeddings (safe)."""
+    a = np.array(vec1, dtype=np.float32)
+    b = np.array(vec2, dtype=np.float32)
 
+    denom = (np.linalg.norm(a) * np.linalg.norm(b))
+    if denom == 0:
+        return 0.0
 
-def search(query_embedding, vectors, top_k=3):
-    """Return top_k most similar chunks."""
+    return float(np.dot(a, b) / denom)
+
+def search(query_embedding, vectors, top_k=3, min_similarity=0.25):
+    """
+    Return top_k most similar chunks above a minimum similarity threshold.
+    """
     results = []
 
     for v in vectors:
         sim = cosine_similarity(query_embedding, v["embedding"])
-        results.append({
-            "doc_name": v["doc_name"],
-            "chunk_id": v["chunk_id"],
-            "text": v["text"],
-            "similarity": float(sim)
-        })
+        if sim >= min_similarity:
+            results.append({
+                "doc_name": v["doc_name"],
+                "chunk_id": v["chunk_id"],
+                "text": v["text"],
+                "similarity": sim
+            })
 
-    # Sort by similarity, highest first
-    results = sorted(results, key=lambda x: x["similarity"], reverse=True)
-
+    results.sort(key=lambda x: x["similarity"], reverse=True)
     return results[:top_k]
+

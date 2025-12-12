@@ -16,7 +16,7 @@ def main():
     all_vectors = []
 
     for doc in docs:
-        chunks = chunk_text(doc["content"], max_length=300)
+        chunks = chunk_text(doc["content"])
         for idx, chunk in enumerate(chunks):
             embedding = embed_text(chunk)
             all_vectors.append({
