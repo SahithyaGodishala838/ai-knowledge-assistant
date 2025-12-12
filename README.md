@@ -1,3 +1,9 @@
+![Python](https://img.shields.io/badge/Python-3.10+-blue)
+![Streamlit](https://img.shields.io/badge/Streamlit-Web_App-red)
+![RAG](https://img.shields.io/badge/Architecture-RAG-purple)
+![AI](https://img.shields.io/badge/AI-LLM%20%7C%20Embeddings-brightgreen)
+![GitHub](https://img.shields.io/badge/Version_Control-GitHub-black)
+
 # 🤖 AI Knowledge Assistant
 
 *A Production-Ready Retrieval-Augmented Generation (RAG) System*
