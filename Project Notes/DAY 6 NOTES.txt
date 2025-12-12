@@ -1,0 +1,310 @@
+📘 Day 6 Notes
+
+## AI Knowledge Assistant Project
+
+### (Options A–D)
+
+---
+
+## 🔹 Day 6 Overview
+
+**Objective of Day 6:**
+Transform the AI Knowledge Assistant from a working RAG prototype into a **professional, portfolio-grade application** by improving:
+
+* Retrieval quality
+* Document coverage (TXT + DOCX + PDF-ready)
+* Answer clarity and UX
+* Web-based user interface
+
+By the end of Day 6, the project supports:
+
+* CLI + Web UI
+* Multi-document RAG
+* Explainable answers with sources
+* Clean Git milestone commit
+
+---
+
+# 🅰️ Option A — Retrieval Quality Upgrade
+
+### 🎯 Goal
+
+Improve **answer accuracy** by improving **retrieval**, not by changing LLMs.
+
+---
+
+### 🔧 Key Improvements Implemented
+
+#### 1️⃣ Sentence-aware chunking
+
+* Earlier: chunks were split by raw character count
+* Now: text is split by **sentences**, preserving meaning
+
+**Why this matters:**
+Embeddings represent semantic meaning better when sentences are intact.
+
+---
+
+#### 2️⃣ Chunk overlap
+
+* Each chunk carries over the last few sentences from the previous chunk
+
+**Benefit:**
+Prevents loss of context across chunk boundaries.
+
+---
+
+#### 3️⃣ Similarity threshold
+
+* Retrieval now filters out chunks below a similarity score (e.g., 0.20–0.30)
+
+**Benefit:**
+
+* Reduces irrelevant context
+* Prevents hallucinations
+* Improves final answer quality
+
+---
+
+#### 4️⃣ Metadata-aware retrieval
+
+Each chunk stores:
+
+* `doc_name`
+* `chunk_id`
+* `similarity score`
+* `text`
+
+This enables:
+
+* Source attribution
+* Debugging retrieval quality
+* Explainability (important for enterprise AI)
+
+---
+
+### 🧠 Key Learning
+
+> In RAG systems, **retrieval quality matters more than the LLM choice**.
+
+---
+
+# 🅱️ Option B — Multi-Document Support (TXT + DOCX + PDF)
+
+### 🎯 Goal
+
+Allow the assistant to read **real-world documents** like resumes and reports.
+
+---
+
+### 📂 New Capability
+
+The assistant now loads documents from:
+
+```
+data/documents/
+```
+
+Supported formats:
+
+* `.txt`
+* `.docx`
+* `.pdf` (text-based)
+
+---
+
+### 🧩 document_loader.py
+
+A new loader handles:
+
+* TXT via UTF-8 read
+* DOCX via `python-docx`
+* PDF via `pypdf`
+
+Each document is returned as:
+
+```python
+{
+  "name": file_name,
+  "content": extracted_text,
+  "type": "txt/docx/pdf"
+}
+```
+
+---
+
+### 🔀 Index Build Modes
+
+`build_index.py` now supports **modes**:
+
+* TXT only:
+
+```bash
+python src/build_index.py
+```
+
+* All documents:
+
+```bash
+python src/build_index.py all
+```
+
+**Why this is good design:**
+
+* Flexible
+* Backward-compatible
+* No destructive changes
+
+---
+
+### 🧠 Key Learning
+
+> A good RAG system separates **document ingestion** from **retrieval logic**.
+
+---
+
+# 🅲 Option C — UX & Answer Quality Improvements
+
+### 🎯 Goal
+
+Make answers **clear, readable, and trustworthy**, even without external LLM APIs.
+
+---
+
+### 🔧 Improvements Made
+
+#### 1️⃣ Improved retrieval for broad questions
+
+* Lowered similarity threshold for questions like:
+
+  * “Summarize my resume”
+  * “What is this document about?”
+
+---
+
+#### 2️⃣ Improved local answer generation
+
+Earlier:
+
+* Local mode echoed the prompt (not helpful)
+
+Now:
+
+* Extracts retrieved context
+* Produces a **concise, extractive summary**
+* Handles “no context” gracefully
+
+Example behavior:
+
+* If chunks exist → summarized answer
+* If no chunks → “I don’t know”
+
+---
+
+#### 3️⃣ Clear source display
+
+* Shows:
+
+  * Document name
+  * Similarity score
+  * Chunk preview
+
+**Why this matters:**
+
+* Builds trust
+* Enables explainability
+* Matches enterprise AI expectations
+
+---
+
+### 🧠 Key Learning
+
+> UX and answer formatting are just as important as model accuracy.
+
+---
+
+# 🅳 Option D — Streamlit Web Application
+
+### 🎯 Goal
+
+Turn the CLI-based assistant into a **real web app**.
+
+---
+
+### 🌐 Streamlit UI Features
+
+* Web-based interface
+* Sidebar controls:
+
+  * LLM provider selection
+  * Top-K retrieval slider
+* Question input box
+* Answer display
+* Retrieved source display
+
+---
+
+### 📄 app_streamlit.py
+
+* Lives in project root
+* Uses the same `rag_pipeline`
+* Adds minimal UI code without duplicating logic
+
+---
+
+### 🔧 Import Strategy (Non-destructive)
+
+Instead of rewriting all imports:
+
+* Added a **path bootstrap** in `app_streamlit.py`
+* Allowed both:
+
+  * CLI execution
+  * Streamlit execution
+
+**Benefit:**
+One codebase → multiple entry points.
+
+---
+
+### 🧠 Key Learning
+
+> Production-ready projects support multiple execution environments without duplicating logic.
+
+---
+
+# ✅ Day 6 Final Outcome
+
+By the end of Day 6, the AI Knowledge Assistant:
+
+* ✅ Uses high-quality retrieval (Option A)
+* ✅ Reads real documents (Option B)
+* ✅ Produces clean, meaningful answers (Option C)
+* ✅ Runs as a web app (Option D)
+* ✅ Is fully committed and pushed to GitHub
+
+---
+
+## 🏁 Day 6 Milestone Commit
+
+```text
+Option D: Add Streamlit UI for AI Knowledge Assistant
+```
+
+Working tree clean ✔
+GitHub up-to-date ✔
+
+---
+
+## 🔮 What This Project Demonstrates (Interview Ready)
+
+* RAG architecture understanding
+* Embeddings + vector search
+* Retrieval optimization
+* Multi-format document ingestion
+* UX thinking for AI systems
+* Web deployment readiness
+* Strong Git discipline
+
+---
+

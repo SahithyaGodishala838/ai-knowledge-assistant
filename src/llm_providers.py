@@ -89,7 +89,22 @@ def generate_local(prompt: str) -> str:
     if len(preview) > 700:
         preview = preview[:700] + "..."
 
-    return "[Local generator]\n\nSummary based on retrieved context:\n" + preview
+   # collect citations that appear in context
+    citations = []
+    for ln in context.splitlines():
+        ln = ln.strip()
+        if ln.startswith("[") and "]" in ln:
+           citations.append(ln)
+
+    citations = list(dict.fromkeys(citations))  # unique, keep order
+    cite_text = " ".join(citations[:3])  # limit to top 3
+
+    return (
+    "[Local generator]\n\n"
+    "Answer based on retrieved sources:\n"
+    f"{preview}\n\n"
+    f"Sources: {cite_text if cite_text else 'N/A'}"
+)
 
 
 def generate_with_provider(provider: str, prompt: str) -> str:

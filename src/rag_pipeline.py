@@ -2,35 +2,54 @@ from embedder import embed_text
 from vector_store import load_vectors, search
 from llm_providers import generate_with_provider
 
-
-def build_prompt(question: str, retrieved):
+def build_chat_context(chat_history, max_turns=4):
     """
-    Build a context + question prompt for RAG.
+    Builds a short conversation context from recent turns.
     """
-    context_sections = []
-    for idx, item in enumerate(retrieved, start=1):
-        context_sections.append(
-            f"Chunk {idx} from {item['doc_name']}:\n{item['text']}\n"
-        )
+    if not chat_history:
+        return ""
 
-    context = "\n".join(context_sections)
+    recent = chat_history[-max_turns:]
+    lines = []
+    for turn in recent:
+        lines.append(f"User: {turn['question']}")
+        lines.append(f"Assistant: {turn['answer']}")
+
+    return "\n".join(lines)
+
+def build_prompt(question, retrieved_chunks, chat_history=None):
+    chat_context = build_chat_context(chat_history)
+
+    context_blocks = []
+    for i, r in enumerate(retrieved_chunks, 1):
+        cite = f"[{r['doc_name']} - Chunk {r['chunk_id']}]"
+        context_blocks.append(
+           f"{cite}\n{r['text']}"
+    )
+    context_text = "\n\n".join(context_blocks)
+
 
     prompt = f"""
 You are an AI assistant that must answer ONLY using the context below.
 If the answer is not in the context, say "I don't know".
 
+Conversation so far:
+{chat_context}
+
 Context:
-{context}
+{context_text}
 
 Question:
 {question}
 
 Answer clearly and concisely:
-"""
-    return prompt.strip()
+""".strip()
+
+    return prompt
 
 
-def rag_answer(question: str, provider: str = "openai", top_k: int = 5):
+def rag_answer(question, provider="openai", top_k=5, chat_history=None, fallback_chunks=None):
+
     """
     Full RAG pipeline.
     """
@@ -45,11 +64,17 @@ def rag_answer(question: str, provider: str = "openai", top_k: int = 5):
     q_embed = embed_text(question)
 
     # Step 3 — Retrieve top chunks
-    retrieved = search(q_embed, vectors, top_k=5, min_similarity=0.20)
+    retrieved = search(q_embed, vectors, top_k=top_k, min_similarity=0.20)
+
+    if not retrieved and fallback_chunks:
+       retrieved = fallback_chunks
+
+    if not retrieved:
+       return "I don't know (no relevant context found in your documents).", []
 
 
     # Step 4 — Build prompt for LLM
-    prompt = build_prompt(question, retrieved)
+    prompt = build_prompt(question, retrieved, chat_history)
 
     # Step 5 — Generate answer
     print(f"🤖 Using provider: {provider}")
