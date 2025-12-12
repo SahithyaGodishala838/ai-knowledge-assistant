@@ -30,7 +30,7 @@ Answer clearly and concisely:
     return prompt.strip()
 
 
-def rag_answer(question: str, provider: str = "openai", top_k: int = 3):
+def rag_answer(question: str, provider: str = "openai", top_k: int = 5):
     """
     Full RAG pipeline.
     """
@@ -45,7 +45,8 @@ def rag_answer(question: str, provider: str = "openai", top_k: int = 3):
     q_embed = embed_text(question)
 
     # Step 3 — Retrieve top chunks
-    retrieved = search(q_embed, vectors, top_k=top_k)
+    retrieved = search(q_embed, vectors, top_k=5, min_similarity=0.20)
+
 
     # Step 4 — Build prompt for LLM
     prompt = build_prompt(question, retrieved)

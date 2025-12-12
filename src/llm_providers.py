@@ -69,10 +69,27 @@ def generate_hf(prompt: str) -> str:
 def generate_local(prompt: str) -> str:
     """
     Local fallback – no external API required.
-    For now, it just echoes a structured answer using the prompt/context.
+    Extracts the Context section from the prompt and produces a simple summary.
     """
-    header = "[Local generator – no API used]\n\n"
-    return header + "Here is a response based on the provided context:\n\n" + prompt[:900]
+    # Try to extract context between "Context:" and "Question:"
+    context = ""
+    if "Context:" in prompt and "Question:" in prompt:
+        context = prompt.split("Context:", 1)[1].split("Question:", 1)[0].strip()
+
+    if not context:
+        return "[Local generator]\n\nI don't know (no context retrieved)."
+
+    # Simple local summary: take first few meaningful lines
+    lines = [ln.strip() for ln in context.splitlines() if ln.strip()]
+    # Remove "Chunk x ..." headers for cleaner summary
+    cleaned = [ln for ln in lines if not ln.lower().startswith("chunk ")]
+    preview = " ".join(cleaned)
+
+    # Keep it concise
+    if len(preview) > 700:
+        preview = preview[:700] + "..."
+
+    return "[Local generator]\n\nSummary based on retrieved context:\n" + preview
 
 
 def generate_with_provider(provider: str, prompt: str) -> str:
