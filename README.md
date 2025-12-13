@@ -278,3 +278,11 @@ AI / ML Engineer
 📍 United States
 
 
+### Why do multiple sources appear?
+
+The assistant retrieves the **Top-K most relevant chunks**, not documents.
+
+A single document may appear multiple times if:
+- It contains several highly relevant sections
+- Each section independently matches the query
+
